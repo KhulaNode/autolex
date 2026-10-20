@@ -39,7 +39,7 @@ The demo email is **info@autolex.co.za**. Displaying it does not provision a mai
 | `BUSINESS_WHATSAPP`             | `27730572188`, including country code.                                                                       |
 | `FACEBOOK_URL`, `INSTAGRAM_URL` | Empty until official full profile URLs are supplied.                                                         |
 | `WEEKDAY_OPEN`, `WEEKDAY_CLOSE` | `08:00`, `16:30`, in 24-hour SAST. Change both together.                                                     |
-| `AUTOLEX_IMAGE`                 | `autolex:local`; image tag used by Compose. Set a registry image/tag for a pull-based deployment.            |
+| `AUTOLEX_IMAGE`                 | `autolex-website:latest`; local output tag for the image built by Compose.            |
 | `HOST_PORT`                     | `3000`; local host port bound to 127.0.0.1. The container always listens on 3000.                            |
 
 **Business settings are read by the running Node server, not embedded in a static page at build time.** Next.js server-renders the pages and generates sitemap/robots responses using the runtime configuration. Change `.env`, then recreate the Compose service to apply updates; no image rebuild is needed for business settings. Restart `npm run dev` after local environment changes. `.env.local`, if present, overrides `.env` for local Next.js commands.
@@ -48,68 +48,60 @@ Never put secrets in these public settings. Saturday hours, Sunday closure, phon
 
 ## Run with Docker Compose
 
-`docker-compose.yml` is **image-only**: it has no `build:` section and does not build or invoke the Dockerfile. The updated `autolex:local` image is prepared on the development machine. On a new host, load that image or select an existing published registry image before starting Compose.
+`docker-compose.yml` builds the repository's multi-stage Dockerfile and tags the
+result as `autolex-website:latest` (or `AUTOLEX_IMAGE`). `pull_policy: build` makes Compose
+build from source on deployment, even when an older image already exists. No
+prebuilt image, registry account or Docker login is required.
 
 ```bash
 cp .env.example .env
 # Adjust SITE_URL and other public settings in .env.
-docker compose up -d
-# Wait for the service to become healthy:
+docker compose up -d --build
 docker compose ps
 docker compose logs -f website
-```
-
-Open **http://localhost:3000**, or check:
-
-```bash
 curl -fsS http://localhost:3000/api/health
 ```
 
-Expected response: `{"status":"ok","service":"autolex-website"}`.
+Expected health response: `{"status":"ok","service":"autolex-website"}`.
+
+The image uses Node.js 24 on Alpine, `npm ci` and Next.js standalone output. It
+runs as an unprivileged user, listens on container port 3000 and includes a health
+check. Local access binds to `127.0.0.1:${HOST_PORT:-3000}`. No database or persistent
+volumes are required. Business settings are supplied at runtime; `.env` files are
+excluded from the image. Redeploy after code changes; recreate the container after
+changing environment values.
 
 ```bash
-# Apply .env changes without rebuilding the image:
-docker compose up -d --force-recreate
-# Stop the service:
+# Apply environment changes without rebuilding:
+docker compose up -d --no-build --force-recreate
+# Stop the local service:
 docker compose down
 ```
 
-The service runs as an unprivileged user, binds `0.0.0.0:3000` internally, has a health check and restarts unless explicitly stopped. No volumes, source mounts, database or persistent storage are needed. The local host port binds to loopback; Dokploy routes to the container internally.
-
-### Transfer the prebuilt image to another Docker host
-
-No image registry has been configured or image published by this task. One option is to export the prepared image, copy the archive using your existing secure transfer process, and load it on the destination host:
-
-```bash
-# Development machine:
-docker image save autolex:local -o autolex-image.tar
-# Destination machine, after transferring the archive:
-docker image load -i autolex-image.tar
-docker compose up -d
-```
-
-Keep image archives outside Git. Alternatively, publish the image to your chosen registry through your deployment pipeline, set `AUTOLEX_IMAGE` to that full registry tag, and use `docker compose pull` before starting it. Publishing and server changes are handled separately.
-
-### Maintainer image builds
-
-The original multi-stage Dockerfile remains available for KhulaNode's image preparation or future CI pipeline. You do not need to build it to start the supplied Compose deployment. When application code or assets change, the maintainer produces an updated image once:
-
-```bash
-docker build -t autolex:local .
-```
-
-Public settings may be overridden at runtime by Compose. The image uses Node.js 24 LTS on Alpine, `npm ci`, and Next.js standalone output. `.env` files are excluded from the image. A registry-backed production pipeline should use versioned image tags.
-
 ## Deploy with Dokploy Compose
 
-1. Create a **Docker Compose** service in the existing Dokploy project, connect the repository and select `docker-compose.yml`. Use Compose mode.
-2. Make the prepared image available to that VPS: load the image there using the transfer method above, or configure `AUTOLEX_IMAGE` with an existing accessible registry image. `autolex:local` is a local tag, not an image published on Docker Hub.
-3. In Dokploy's Environment settings, set `SITE_URL` to the public HTTPS origin and any approved email, contact, hours or social overrides. The Compose file explicitly passes these variables into the container. Set `HOST_PORT` to an unused local port if 3000 is already occupied.
-4. Configure the domain for service **website**, container port **3000**, with HTTP as the internal protocol. Dokploy handles routing and TLS; no custom proxy files are required.
-5. Deploy, verify the healthy container and `/api/health`, then check pages, links, canonical URLs, `/sitemap.xml` and `/robots.txt` on the real domain.
-6. Recreate/redeploy after environment changes. For code/asset changes, use the newly prepared image. Compose does not compile application source.
+1. Connect the `KhulaNode/autolex` Git repository and the branch containing this
+   change to a **Docker Compose** service. Select `docker-compose.yml` and Compose
+   mode, with the repository root as the source directory.
+2. Set `SITE_URL` to the actual public HTTPS origin in Dokploy's Environment
+   settings. Set any approved contact, hours and social overrides there too.
+   `AUTOLEX_IMAGE` may stay unset; it is an output tag for the local build.
+3. Configure the domain for service **website**, container port **3000**, with HTTP
+   as the internal protocol. Dokploy handles TLS and routing. If the local host
+   port 3000 is occupied, set `HOST_PORT` to an unused port.
+4. Deploy. Compose builds the image from the checked-out source. An explicit custom
+   Compose command, if used, should be `docker compose up -d --build`; remove any
+   custom image-only pull command or `--no-build` flag.
+5. Verify the healthy container and `/api/health`, then check pages, canonical URLs,
+   `/sitemap.xml` and `/robots.txt` on the real domain. Redeploy after source changes.
 
-See the [official Dokploy Compose documentation](https://docs.dokploy.com/docs/core/docker-compose) for its environment and service controls. No image has been pushed or remote deployment performed by this task.
+The earlier `pull access denied for autolex` error came from an image-only Compose
+file pointing at an unpublished local tag. Adding `build` and `pull_policy: build`
+removes that dependency. Do not use Swarm/Stack mode for this source-build setup;
+that mode requires a separately built and published image.
+
+See the [Dokploy Compose documentation](https://docs.dokploy.com/docs/core/docker-compose)
+and [Docker pull policy documentation](https://docs.docker.com/reference/compose-file/services/#pull_policy).
 
 ## Assets and content assumptions
 
@@ -142,7 +134,7 @@ Validation completed for this POC:
 
 - `npm run lint`, `npm run typecheck` and `npm run build` pass.
 - Production Docker image builds; its container runs as `nextjs` and reports healthy. Pages, metadata routes, image optimisation and `/api/health` return HTTP 200.
-- Image-only Compose startup passes with no build step. Container email/domain overrides update the pages, canonical URLs, sitemap and robots responses without rebuilding.
+- Container email/domain overrides update the pages, canonical URLs, sitemap and robots responses without rebuilding.
 - `npm start` serves the standalone application and static assets locally.
 - Chromium checks cover all four pages at 320, 390, 768 and 1440 pixels, with no horizontal overflow, broken images or automated axe WCAG 2/2.1 A/AA findings. Automated checks do not replace assistive-technology testing.
 - Mobile menu opening/closing, Escape, navigation, ten category-specific WhatsApp destinations, structured data and the 404 response pass. No browser JavaScript errors were observed.

@@ -1,6 +1,10 @@
 services:
   website:
-    image: ${AUTOLEX_IMAGE:-autolex:local}
+    image: ${AUTOLEX_IMAGE:-autolex-website:latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    pull_policy: build
     init: true
     restart: unless-stopped
     ports:
