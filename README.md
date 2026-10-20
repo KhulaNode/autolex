@@ -40,7 +40,6 @@ The demo email is **info@autolex.co.za**. Displaying it does not provision a mai
 | `FACEBOOK_URL`, `INSTAGRAM_URL` | Empty until official full profile URLs are supplied.                                                         |
 | `WEEKDAY_OPEN`, `WEEKDAY_CLOSE` | `08:00`, `16:30`, in 24-hour SAST. Change both together.                                                     |
 | `AUTOLEX_IMAGE`                 | `autolex-website:latest`; local output tag for the image built by Compose.            |
-| `HOST_PORT`                     | `3000`; local host port bound to 127.0.0.1. The container always listens on 3000.                            |
 
 **Business settings are read by the running Node server, not embedded in a static page at build time.** Next.js server-renders the pages and generates sitemap/robots responses using the runtime configuration. Change `.env`, then recreate the Compose service to apply updates; no image rebuild is needed for business settings. Restart `npm run dev` after local environment changes. `.env.local`, if present, overrides `.env` for local Next.js commands.
 
@@ -59,15 +58,16 @@ cp .env.example .env
 docker compose up -d --build
 docker compose ps
 docker compose logs -f website
-curl -fsS http://localhost:3000/api/health
+docker compose exec website node -e "fetch('http://127.0.0.1:3000/api/health').then(async r => { console.log(await r.text()); if (!r.ok) process.exitCode = 1; }).catch(() => { process.exitCode = 1; })"
 ```
 
 Expected health response: `{"status":"ok","service":"autolex-website"}`.
 
 The image uses Node.js 24 on Alpine, `npm ci` and Next.js standalone output. It
 runs as an unprivileged user, listens on container port 3000 and includes a health
-check. Local access binds to `127.0.0.1:${HOST_PORT:-3000}`. No database or persistent
-volumes are required. Business settings are supplied at runtime; `.env` files are
+check. Container port 3000 is exposed internally, with no host port published.
+Access the website through its Dokploy domain. No database or persistent volumes
+are required. Business settings are supplied at runtime; `.env` files are
 excluded from the image. Redeploy after code changes; recreate the container after
 changing environment values.
 
@@ -87,8 +87,8 @@ docker compose down
    settings. Set any approved contact, hours and social overrides there too.
    `AUTOLEX_IMAGE` may stay unset; it is an output tag for the local build.
 3. Configure the domain for service **website**, container port **3000**, with HTTP
-   as the internal protocol. Dokploy handles TLS and routing. If the local host
-   port 3000 is occupied, set `HOST_PORT` to an unused port.
+   as the internal protocol. Dokploy handles TLS and routing without a host port
+   mapping. Remove any manually configured published ports in Dokploy as well.
 4. Deploy. Compose builds the image from the checked-out source. An explicit custom
    Compose command, if used, should be `docker compose up -d --build`; remove any
    custom image-only pull command or `--no-build` flag.
