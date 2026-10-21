@@ -108,7 +108,7 @@ and [Docker pull policy documentation](https://docs.docker.com/reference/compose
 - Supplied brand files are preserved in `public/branding/`. The original `AutoLex Lightning Logo.png` is used in the header/footer; `Bold AL Lightning Bolt Logo.png` supplies the favicon. No substitute business logo was created.
 - Supplied JPG promotional artwork and the business card informed the colours and product information. They remain available as source assets. No separate website mockup was found.
 - The engine image in `public/images/engine-workshop.jpg` is an illustrative automotive photo from [Unsplash](https://unsplash.com) via [the original image CDN](https://images.unsplash.com/photo-1486262715619-67b85e0b08d3), downloaded for this POC. It does not depict Autolex’s premises or stock. [Unsplash licence](https://unsplash.com/license). Replace it with approved business photography if supplied.
-- All ten categories currently use component photographs downloaded from Wikimedia Commons and hosted in `public/images/products/`. Their author, source and reuse-licence details remain in `public/images/products/CREDITS.md` until the photographs are replaced. The website no longer displays a photo-credits section. These are category examples, not photographs of confirmed Autolex stock. No availability, brand or compatibility claims are implied.
+- Nine categories use the newly supplied component images. Their source PNGs are in `public/images/products 2.0/`; optimized WebP copies in `public/images/products/` are used by the website. The accessories card still uses the earlier CC0 connector photo because no replacement was supplied for that category. Its source details, along with an archive of the superseded photos, remain in `public/images/products/CREDITS.md`. These images are category illustrations, not photographs of confirmed Autolex stock. No availability, brand or compatibility claims are implied.
 - Both supplied phone numbers are shown on the business card beside the WhatsApp mark. The first is used as the default enquiry destination; Brandon should confirm the preferred number before launch.
 - Official Facebook/Instagram URLs and public-holiday hours remain unconfirmed. The weekday, Saturday and Sunday schedule was supplied by the client.
 - No testimonials, history, certifications, stock counts or performance/ranking claims have been added.
@@ -121,7 +121,7 @@ src/app/             Routes, metadata, sitemap, robots, health endpoint
 src/components/      Shared navigation, footer, cards and enquiry components
 src/lib/business.ts  Business configuration, contact links and trading hours
 src/lib/products.ts  Static category definitions
-src/lib/product-images.ts  Component photos and provenance
+src/lib/product-images.ts  Product category image paths and alt text
 src/lib/seo.ts       Shared page metadata helper
 public/              Original branding and locally hosted imagery
 ```

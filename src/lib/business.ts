@@ -80,7 +80,7 @@ export const business = {
       process.env.WEEKDAY_CLOSE || "16:30",
     ),
     hours("Saturday", ["Saturday"], "08:00", "11:30"),
-    { ...hours("Sunday", ["Sunday"]), closed: true },
+    { ...hours("Sunday and Public Holidays", ["Sunday"]), closed: true },
   ],
   socials: {
     facebook: optionalUrl(process.env.FACEBOOK_URL),

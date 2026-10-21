@@ -23,7 +23,7 @@ export function ProductCard({
           fill
           sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 1100px) 45vw, 400px"
         />
-        <span className="product-visual-label">COMPONENT EXAMPLE</span>
+        {/* <span className="product-visual-label">COMPONENT EXAMPLE</span> */}
       </div>
       <div className="product-content">
         <p className="card-eyebrow">{product.eyebrow}</p>

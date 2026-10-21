@@ -10,6 +10,7 @@ import {
   MessageCircle,
   Tractor,
   Truck,
+  Van,
   Wrench,
   Zap,
 } from "lucide-react";
@@ -30,7 +31,7 @@ export const metadata = pageMetadata(
 
 const vehicles = [
   { label: "Cars", icon: CarFront },
-  { label: "Bakkies", icon: Truck },
+  { label: "Bakkies", icon: Van },
   { label: "Trucks", icon: Truck },
   { label: "Buses", icon: BusFront },
   { label: "Heavy machinery", icon: Tractor },
@@ -93,10 +94,10 @@ export default function Home() {
               <MapPin size={15} aria-hidden="true" />
               {business.address.suburb}, {business.address.city}
             </span>
-            <span>
+            {/* <span>
               NEW & RECONDITIONED STARTERS AND ALTERNATORS
               <ArrowUpRight size={16} aria-hidden="true" />
-            </span>
+            </span> */}
           </div>
         </div>
       </section>
@@ -145,7 +146,7 @@ export default function Home() {
         <div className="container intro-grid">
           <div className="intro-image">
             <Image
-              src="/images/engine-workshop.jpg"
+              src="/images/Automotive_Diagnostics_Under_the_Hood.png"
               alt="Engine belt and pulley assembly, showing the detail of an automotive power system"
               fill
               sizes="(max-width: 800px) 100vw, 50vw"

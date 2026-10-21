@@ -8,4 +8,5 @@ node_modules
 *.tsbuildinfo
 coverage
 README.md
+public/images/products 2.0
 **/*:Zone.Identifier

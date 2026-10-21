@@ -72,9 +72,9 @@ export function SiteFooter() {
               </div>
             ))}
           </dl>
-          <p className="holiday-note">
+          {/* <p className="holiday-note">
             Please confirm public holiday hours before visiting.
-          </p>
+          </p> */}
         </div>
       </div>
       <div className="container footer-bottom">

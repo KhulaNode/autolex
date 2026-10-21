@@ -1,6 +1,6 @@
-# Product image credits
+# Previous product image sources
 
-Real component photographs used as category examples, not confirmation of Autolex brands, stock or condition. Source thumbnails are hosted locally and displayed with responsive sizing; no content retouching. Keep attribution with reused files.
+The photographs listed below for nine categories have been replaced by supplied images. Their details are kept here as an internal record. The accessories photo is still used on the website and is licensed CC0. The current category images do not confirm Autolex brands, stock or condition.
 
 ## starter-motors
 - File: /images/products/starter-motors.jpg

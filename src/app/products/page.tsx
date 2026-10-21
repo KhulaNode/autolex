@@ -35,10 +35,10 @@ export default function Products() {
               <ProductCard key={product.slug} product={product} index={index} />
             ))}
           </div>
-          <p className="availability-note">
+          {/* <p className="availability-note">
             Photos show component examples. Contact us to confirm brands,
             suitability and current availability.
-          </p>
+          </p> */}
         </div>
       </section>
       <section className="parts-help">

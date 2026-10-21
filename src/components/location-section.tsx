@@ -45,10 +45,10 @@ export function LocationSection() {
               </div>
             ))}
           </dl>
-          <p>
+          {/* <p>
             Public holidays may affect trading hours. Give us a call before
             travelling.
-          </p>
+          </p> */}
         </div>
       </div>
     </section>
