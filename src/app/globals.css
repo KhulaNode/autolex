@@ -559,34 +559,6 @@ p + p {
   padding: 2px 6px;
   z-index: 1;
 }
-.image-credits {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
-  font-size: 12px;
-  color: var(--muted);
-}
-.image-credits summary {
-  cursor: pointer;
-  font-weight: 700;
-  padding-block: 10px;
-  color: var(--ink);
-}
-.image-credits p {
-  margin-top: 12px;
-}
-.image-credits ul {
-  margin-block: 15px;
-  padding-left: 20px;
-}
-.image-credits li + li {
-  margin-top: 8px;
-}
-.image-credits a {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  overflow-wrap: anywhere;
-}
 .product-content {
   padding: 25px 22px 17px;
 }

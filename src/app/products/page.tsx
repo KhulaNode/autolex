@@ -4,7 +4,6 @@ import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/page-hero";
 import { ProductCard } from "@/components/product-card";
 import { EnquiryBanner } from "@/components/enquiry-banner";
-import { ImageCredits } from "@/components/image-credits";
 
 export const metadata = pageMetadata(
   "Auto-electrical product categories",
@@ -40,7 +39,6 @@ export default function Products() {
             Photos show component examples. Contact us to confirm brands,
             suitability and current availability.
           </p>
-          <ImageCredits />
         </div>
       </section>
       <section className="parts-help">

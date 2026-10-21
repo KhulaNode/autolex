@@ -78,11 +78,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="container footer-bottom">
-        <span>
-          © {new Date().getFullYear()} {business.name}
-          {" · "}
-          <Link href="/products#image-credits">Photo credits</Link>
-        </span>
+        <span>© {new Date().getFullYear()} {business.name}</span>
         <span>
           Developed &amp; maintained by{" "}
           <a
